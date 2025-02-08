@@ -1,0 +1,24 @@
+from pygame import K_RIGHT, K_LEFT, K_a, K_d
+
+FRAMERATE = 240
+
+WINDOW_WIDTH = 800
+WINDOW_HEIGH = 1000
+
+PADDLE_SPEED = 2 # pixels per frame
+PADDLE_WIDTH = WINDOW_WIDTH * 0.2
+PADDLE_LENGTH = WINDOW_HEIGH * 0.05
+
+BALL_RADIUS = WINDOW_WIDTH * 0.02
+BALL_SPEED = 1 # pixels per frame
+
+CURSOR_RADIUS = 10
+CURSOR_WIDTH = 2
+
+HUMAN_PLAYER_CONTROLS = {"left" : K_LEFT, 
+                         "right": K_RIGHT}
+PLAYER_STARTING_POSITION = (0.1 * WINDOW_WIDTH, 0.9 * WINDOW_HEIGH)
+
+COMPUTER_PLAYER_CONTROLS = {"left" : K_a, 
+                            "right" : K_d}
+COMPUTER_STARTING_POSITION = (0.1 * WINDOW_WIDTH, 0.1 * WINDOW_HEIGH)
