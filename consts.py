@@ -1,6 +1,7 @@
 from pygame import K_RIGHT, K_LEFT, K_a, K_d
 
-FRAMERATE = 240
+FRAMERATE = 240 #frames per seconds
+DELAY_BETWEEN_FINGER_DETECTION = 0.1 # in seconds
 
 WINDOW_WIDTH = 800
 WINDOW_HEIGH = 1000
