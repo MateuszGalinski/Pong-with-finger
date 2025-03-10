@@ -37,12 +37,18 @@ class HandDetector:
             mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
 
             self.detector.detect_async(mp_image, self.timestamp)
+            cv2.imshow('preview', frame)
+            cv2.waitKey(1)
 
     def calculate_results(self, image : mp.Image, timestamp_ms : int):
         self.detector.detect_async(image, timestamp_ms)
 
+    def show_preview(self, image : mp.Image):
+        pass
+
     def close(self):
         self.video.release()
+        cv2.destroyAllWindows()
 
 def print_result(result: mp.tasks.vision.HandLandmarkerResult, output_image: mp.Image, timestamp_ms: int):
     hand_landmarks_list = result.hand_landmarks
@@ -56,6 +62,9 @@ def test2():
 
     while True:
         h_detector.process_finger_data()
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+    h_detector.close()
 
 if __name__ == "__main__":
     test2()

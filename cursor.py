@@ -24,7 +24,7 @@ class Cursor:
         if(len(hand_landmarks_list)>0):
             hand_landmarks = hand_landmarks_list[0]
             pointing_finger_location = hand_landmarks[8]
-            print("Y LOCATION OF A FINGER: " + str(pointing_finger_location.y))
+            # print("Y LOCATION OF A FINGER: " + str(pointing_finger_location.y))
             self.hitbox.x = (1 - pointing_finger_location.x) * consts.WINDOW_WIDTH #deleting X from one to flip an image in more optimal way
             self.hitbox.y = pointing_finger_location.y * consts.WINDOW_HEIGH
             

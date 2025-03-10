@@ -69,4 +69,4 @@ class Game:
             self.hand_detector.process_finger_data()
 
             # Small delay to prevent the processing from taking too much CPU time
-            time.sleep(0.01)
+            time.sleep(0.1)
