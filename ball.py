@@ -13,7 +13,7 @@ class Ball:
         self.starting_position_rectangle = pygame.Rect(self.hitbox)
 
         self.color = color
-        self.direction = [-1,1] # format [x,y] where -1 <= x,y <= 1 
+        self.direction = consts.BALL_INITIAL_DIRECTION # format [x,y] where -1 <= x,y <= 1 
 
     def draw(self, surface : pygame.SurfaceType) -> None:
         pygame.draw.circle(surface, self.color, (self.hitbox.centerx, self.hitbox.centery), consts.BALL_RADIUS)
@@ -27,9 +27,9 @@ class Ball:
             self.direction[0] = -self.direction[0]
             self.hitbox.right = consts.WINDOW_WIDTH - 1
 
-        if self.hitbox.left <= 0:
+        if self.hitbox.left <= consts.WINDOW_LEFT_SIDE:
             self.direction[0] = -self.direction[0]
-            self.hitbox.left = 1
+            self.hitbox.left = consts.WINDOW_SAFE_ZONE_LEFT
 
         paddle_hitbox = paddle.get_hitbox()
 
@@ -48,7 +48,12 @@ class Ball:
                 self.hitbox.top = 1
 
     def player_collision(self, paddle_hitbox : pygame.Rect) -> None:
+        '''
+        Check collision of player with ball and if it is a side collision teleports ball to prevent 
+        ball buggin inside of the paddle
+        '''
         self.direction[1] = -self.direction[1]
+        # 'If' below is for side hits
         if self.hitbox.bottom - 1 > paddle_hitbox.top: # -1 pixel to prevent side hit happening on every collision
             self.direction[0] = -self.direction[0]
             if self.hitbox.centerx > paddle_hitbox.centerx: # checks side of the hit to teleport it correctly
@@ -58,7 +63,12 @@ class Ball:
 
 
     def computer_collision(self, paddle_hitbox : pygame.Rect) -> None:
+        '''
+        Check collision of computer player with ball and if it is a side collision teleports ball to prevent 
+        ball buggin inside of the paddle
+        '''
         self.direction[1] = -self.direction[1]
+        # 'If' below is for side hits
         if self.hitbox.top + 1 < paddle_hitbox.bottom: # +1 pixel to prevent side hit happening on every collision
             self.direction[0] = -self.direction[0]
             if self.hitbox.centerx > paddle_hitbox.centerx: # checks side of the hit to teleport it correctly
@@ -67,12 +77,12 @@ class Ball:
                 self.hitbox.right = paddle_hitbox.left - 2
 
     def is_out_of_bounds(self) -> bool:
-        if self.hitbox.bottom < 0:
+        if self.hitbox.bottom < consts.WINDOW_TOP_SIDE:
             return True
         if self.hitbox.top > consts.WINDOW_HEIGH:
             return True
         return False
     
     def reset(self) -> None:
-        self.direction = [1,-1]
+        self.direction = consts.BALL_INITIAL_DIRECTION
         self.hitbox = pygame.Rect(self.starting_position_rectangle)
