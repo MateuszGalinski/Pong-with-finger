@@ -36,8 +36,8 @@ class Ball:
         # print("PADDLE TOP: " + str(paddle_hitbox.top))
         # print("BALL HITBOX CENTERY")
 
-        if(self.hitbox.colliderect(paddle_hitbox)):
-            if paddle_hitbox.centery > consts.WINDOW_HEIGH/2: # assumes player is always on the bottom
+        if self.hitbox.colliderect(paddle_hitbox):
+            if paddle.is_human:
                 self.player_collision(paddle_hitbox)
             else:
                 self.computer_collision(paddle_hitbox)

@@ -17,12 +17,13 @@ class Game:
         self.background.fill(pygame.Color(background_color))
 
         human_player = Paddle(consts.PLAYER_STARTING_POSITION[0], consts.PLAYER_STARTING_POSITION[1])
-        self.players = [human_player]
+        bot_player = Paddle(consts.COMPUTER_STARTING_POSITION[0], consts.COMPUTER_STARTING_POSITION[1], is_human=False)
+        self.players = [human_player, bot_player]
         self.ball = Ball()
         self.cursor = Cursor()
 
         self.hand_detector = HandDetector(self.cursor.follow_finger)
-        self.drawables = [human_player, self.ball, self.cursor]
+        self.drawables = [human_player, bot_player, self.ball, self.cursor]
         self.running = True
 
         self.finger_thread = threading.Thread(target=self.process_finger_data)
@@ -38,9 +39,11 @@ class Game:
 
         keys = pygame.key.get_pressed()
         for player in self.players:
-            player.move_to_cursor(self.cursor)
+            if player.is_human:
+                player.move_to_cursor(self.cursor)
+            else:
+                self.move_bot_paddle(player)
             self.ball.check_colision(player, bounce_off_top_edge=True)
-
 
         self.ball.move()
 
@@ -51,6 +54,12 @@ class Game:
             self.reset()
 
         pygame.display.update()
+
+    def move_bot_paddle(self, bot_paddle: Paddle):
+        if bot_paddle.hitbox.centerx < self.ball.hitbox.centerx:
+            bot_paddle.move_right()
+        elif bot_paddle.hitbox.centerx > self.ball.hitbox.centerx:
+            bot_paddle.move_left()
 
     def is_running(self) -> bool:
         return self.running
