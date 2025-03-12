@@ -50,8 +50,11 @@ class Game:
         for item in self.drawables:
             item.draw(self.window_surface)
 
+        self.draw_points()
+
         if self.ball.is_out_of_bounds():
-            self.reset()
+            # self.reset()
+            self.end_game()
 
         pygame.display.update()
 
@@ -61,6 +64,13 @@ class Game:
         elif bot_paddle.hitbox.centerx > self.ball.hitbox.centerx:
             bot_paddle.move_left()
 
+    def draw_points(self):
+        font = pygame.font.Font(None, 36)
+        human_points_text = font.render(f"Player: {self.players[0].points}", True, (255, 255, 255))
+        bot_points_text = font.render(f"Bot: {self.players[1].points}", True, (255, 255, 255))
+        self.window_surface.blit(human_points_text, (50, consts.WINDOW_HEIGH - 50))
+        self.window_surface.blit(bot_points_text, (50, 50))
+
     def is_running(self) -> bool:
         return self.running
 
@@ -69,6 +79,19 @@ class Game:
         for player in self.players:
             player.reset()
         self.ball.reset()
+
+    def end_game(self):
+        print("GAME OVER")
+        self.running = False
+        self.show_final_scores()
+
+    def show_final_scores(self):
+        font = pygame.font.Font(None, 72)
+        final_text = font.render(f"Final Scores - Player: {self.players[0].points}  Bot: {self.players[1].points}", True, (255, 255, 255))
+        text_rect = final_text.get_rect(center=(consts.WINDOW_WIDTH / 2, consts.WINDOW_HEIGH / 2))
+        self.window_surface.blit(final_text, text_rect)
+        pygame.display.update()
+        pygame.time.wait(10000)
 
     def end(self):
         self.hand_detector.close()

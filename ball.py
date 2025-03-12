@@ -13,7 +13,9 @@ class Ball:
         self.starting_position_rectangle = pygame.Rect(self.hitbox)
 
         self.color = color
-        self.direction = consts.BALL_INITIAL_DIRECTION # format [x,y] where -1 <= x,y <= 1 
+        self.direction = consts.BALL_INITIAL_DIRECTION  # format [x,y] where -1 <= x,y <= 1
+        self.collision_counter = 0
+        self.in_collision = False  # Flag to track collision state
 
     def draw(self, surface : pygame.SurfaceType) -> None:
         pygame.draw.circle(surface, self.color, (self.hitbox.centerx, self.hitbox.centery), consts.BALL_RADIUS)
@@ -37,11 +39,20 @@ class Ball:
         # print("BALL HITBOX CENTERY")
 
         if self.hitbox.colliderect(paddle_hitbox):
-            if paddle.is_human:
-                self.player_collision(paddle_hitbox)
-            else:
-                self.computer_collision(paddle_hitbox)
-            
+            if not self.in_collision:
+                self.in_collision = True
+                if paddle.is_human:
+                    self.player_collision(paddle_hitbox)
+                else:
+                    self.computer_collision(paddle_hitbox)
+                self.collision_counter += 1
+                paddle.points += 1
+                if self.collision_counter % 3 == 0:
+                    consts.BALL_SPEED = min(consts.MAX_BALL_SPEED, consts.BALL_SPEED + 0.1)
+                    print(consts.BALL_SPEED)
+        else:
+            self.in_collision = False
+
         if bounce_off_top_edge:
             if self.hitbox.top < 0:
                 self.direction[1] = -self.direction[1]
@@ -86,3 +97,6 @@ class Ball:
     def reset(self) -> None:
         self.direction = consts.BALL_INITIAL_DIRECTION
         self.hitbox = pygame.Rect(self.starting_position_rectangle)
+        self.collision_counter = 0
+        self.in_collision = False
+        consts.BALL_SPEED = 1

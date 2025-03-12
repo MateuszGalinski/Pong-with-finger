@@ -8,6 +8,7 @@ class Paddle:
         self.is_human = is_human
         self.hitbox = pygame.Rect(x_corner, y_corner, consts.PADDLE_WIDTH, consts.PADDLE_LENGTH)
         self.starting_position_rectangle = pygame.Rect(self.hitbox)
+        self.points = 0
 
     def draw(self, surface : pygame.SurfaceType) -> None:
         pygame.draw.rect(surface, 
@@ -41,3 +42,4 @@ class Paddle:
     
     def reset(self):
         self.hitbox = pygame.Rect(self.starting_position_rectangle)
+        self.points = 0
