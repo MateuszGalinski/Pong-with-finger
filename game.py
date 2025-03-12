@@ -4,6 +4,7 @@ from paddle import Paddle
 from ball import Ball
 from cursor import Cursor
 from handdetector import HandDetector
+from block import Block
 import threading
 import time
 
@@ -21,10 +22,12 @@ class Game:
         self.players = [human_player, bot_player]
         self.ball = Ball()
         self.cursor = Cursor()
+        self.block = Block()
 
         self.hand_detector = HandDetector(self.cursor.follow_finger)
-        self.drawables = [human_player, bot_player, self.ball, self.cursor]
+        self.drawables = [human_player, bot_player, self.ball, self.cursor, self.block]
         self.running = True
+        self.last_player_touched = None
 
         self.finger_thread = threading.Thread(target=self.process_finger_data)
         self.finger_thread.daemon = True  # Allow the thread to exit when the main program exits
@@ -43,9 +46,14 @@ class Game:
                 player.move_to_cursor(self.cursor)
             else:
                 self.move_bot_paddle(player)
-            self.ball.check_colision(player, bounce_off_top_edge=True)
+            if self.ball.check_colision(player, bounce_off_top_edge=False):
+                self.last_player_touched = player
+                self.block.active = True
 
         self.ball.move()
+
+        if self.block.check_collision(self.ball.hitbox, self.last_player_touched):
+            self.block.reset()
 
         for item in self.drawables:
             item.draw(self.window_surface)
@@ -53,8 +61,8 @@ class Game:
         self.draw_points()
 
         if self.ball.is_out_of_bounds():
-            # self.reset()
-            self.end_game()
+            self.reset()
+            # self.end_game()
 
         pygame.display.update()
 
@@ -79,6 +87,7 @@ class Game:
         for player in self.players:
             player.reset()
         self.ball.reset()
+        self.block.reset()
 
     def end_game(self):
         print("GAME OVER")
