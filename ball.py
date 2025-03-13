@@ -16,13 +16,14 @@ class Ball:
         self.direction = consts.BALL_INITIAL_DIRECTION  # format [x,y] where -1 <= x,y <= 1
         self.collision_counter = 0
         self.in_collision = False
+        self.speed = consts.MIN_BALL_SPEED
 
     def draw(self, surface : pygame.SurfaceType) -> None:
         pygame.draw.circle(surface, self.color, (self.hitbox.centerx, self.hitbox.centery), consts.BALL_RADIUS)
 
     def move(self) -> None:
-        self.hitbox.centerx = self.hitbox.centerx + self.direction[0] * consts.BALL_SPEED
-        self.hitbox.centery = self.hitbox.centery + self.direction[1] * consts.BALL_SPEED
+        self.hitbox.centerx = self.hitbox.centerx + self.direction[0] * self.speed
+        self.hitbox.centery = self.hitbox.centery + self.direction[1] * self.speed
 
     def check_colision(self, paddle: Paddle, bounce_off_top_edge: bool = False) -> bool:
         if self.hitbox.right >= consts.WINDOW_WIDTH:
@@ -41,15 +42,15 @@ class Ball:
         if self.hitbox.colliderect(paddle_hitbox):
             if not self.in_collision:
                 self.in_collision = True
-                if paddle.is_human:
+                if paddle_hitbox.centery > consts.WINDOW_HEIGH/2:
                     self.player_collision(paddle_hitbox)
                 else:
                     self.computer_collision(paddle_hitbox)
                 self.collision_counter += 1
                 paddle.points += 1
                 if self.collision_counter % 3 == 0:
-                    consts.BALL_SPEED = min(consts.MAX_BALL_SPEED, consts.BALL_SPEED + 0.1)
-                    print(consts.BALL_SPEED)
+                    consts.BALL_SPEED = min(consts.MAX_BALL_SPEED, self.speed + 0.1)
+                    # print(self.speed)
             return True
         else:
             self.in_collision = False
@@ -95,4 +96,4 @@ class Ball:
         self.hitbox = pygame.Rect(self.starting_position_rectangle)
         self.collision_counter = 0
         self.in_collision = False
-        consts.BALL_SPEED = 1
+        self.speed = consts.MIN_BALL_SPEED

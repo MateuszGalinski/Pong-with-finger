@@ -8,6 +8,9 @@ from block import Block
 import threading
 import time
 
+from qlearning_agent import QValuePaddle
+
+
 class Game:
     def __init__(self, caption: str = 'Pong', background_color: str = "#000000"):
         pygame.init()
@@ -17,21 +20,27 @@ class Game:
         self.background = pygame.Surface((consts.WINDOW_WIDTH, consts.WINDOW_HEIGH))
         self.background.fill(pygame.Color(background_color))
 
-        human_player = Paddle(consts.PLAYER_STARTING_POSITION[0], consts.PLAYER_STARTING_POSITION[1])
-        bot_player = Paddle(consts.COMPUTER_STARTING_POSITION[0], consts.COMPUTER_STARTING_POSITION[1], is_human=False)
-        self.players = [human_player, bot_player]
+        # human_player = Paddle(consts.PLAYER_STARTING_POSITION[0], consts.PLAYER_STARTING_POSITION[1])
+        # bot_player = Paddle(consts.COMPUTER_STARTING_POSITION[0], consts.COMPUTER_STARTING_POSITION[1], is_human=False)
+        # simple_bot = Paddle(consts.PLAYER_STARTING_POSITION[0], consts.PLAYER_STARTING_POSITION[1], is_human=False)
+        simple_bot = QValuePaddle(consts.PLAYER_STARTING_POSITION[0], consts.PLAYER_STARTING_POSITION[1], test=True)
+        self.q_agent = QValuePaddle(consts.COMPUTER_STARTING_POSITION[0], consts.COMPUTER_STARTING_POSITION[1], test=True)
+        self.players = [simple_bot, self.q_agent]
         self.ball = Ball()
         self.cursor = Cursor()
         self.block = Block()
 
         self.hand_detector = HandDetector(self.cursor.follow_finger)
-        self.drawables = [human_player, bot_player, self.ball, self.cursor, self.block]
+        self.drawables = [simple_bot, self.q_agent, self.ball, self.cursor, self.block]
         self.running = True
         self.last_player_touched = None
 
         self.finger_thread = threading.Thread(target=self.process_finger_data)
         self.finger_thread.daemon = True  # Allow the thread to exit when the main program exits
         self.finger_thread.start()
+
+    def get_state(self):
+        return [self.ball.hitbox, self.ball.direction, self.ball.speed], self.players[1].hitbox, self.players[0].hitbox, self.block.hitbox
 
     def game_frame(self) -> None:
         self.window_surface.blit(self.background, (0, 0))
@@ -42,7 +51,14 @@ class Game:
 
         keys = pygame.key.get_pressed()
         for player in self.players:
-            if player.is_human:
+            if isinstance(player, QValuePaddle):
+                state = self.get_state()
+                action = player.get_action(state)
+                if action == "left":
+                    player.move_left()
+                elif action == "right":
+                    player.move_right()
+            elif player.is_human:
                 player.move_to_cursor(self.cursor)
             else:
                 self.move_bot_paddle(player)

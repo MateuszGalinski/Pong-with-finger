@@ -18,7 +18,7 @@ class Block:
         self.x = random.randint(consts.WINDOW_WIDTH // 4, 3 * consts.WINDOW_WIDTH // 4)
         self.y = random.randint(consts.WINDOW_HEIGH // 4, 3 * consts.WINDOW_HEIGH // 4)
         self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
-        self.active = True
+        self.active = False
 
     def draw(self, surface: pygame.SurfaceType) -> None:
         if self.active:
