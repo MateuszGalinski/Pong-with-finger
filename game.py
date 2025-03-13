@@ -20,18 +20,17 @@ class Game:
         self.background = pygame.Surface((consts.WINDOW_WIDTH, consts.WINDOW_HEIGH))
         self.background.fill(pygame.Color(background_color))
 
-        # human_player = Paddle(consts.PLAYER_STARTING_POSITION[0], consts.PLAYER_STARTING_POSITION[1])
-        # bot_player = Paddle(consts.COMPUTER_STARTING_POSITION[0], consts.COMPUTER_STARTING_POSITION[1], is_human=False)
-        # simple_bot = Paddle(consts.PLAYER_STARTING_POSITION[0], consts.PLAYER_STARTING_POSITION[1], is_human=False)
-        simple_bot = QValuePaddle(consts.PLAYER_STARTING_POSITION[0], consts.PLAYER_STARTING_POSITION[1], test=True)
-        self.q_agent = QValuePaddle(consts.COMPUTER_STARTING_POSITION[0], consts.COMPUTER_STARTING_POSITION[1], test=True)
-        self.players = [simple_bot, self.q_agent]
+        human_player = Paddle(consts.PLAYER_STARTING_POSITION[0], consts.PLAYER_STARTING_POSITION[1])
+        # simple_bot = QValuePaddle(consts.COMPUTER_STARTING_POSITION[0], consts.COMPUTER_STARTING_POSITION[1], test=True)
+        simple_bot = Paddle(consts.COMPUTER_STARTING_POSITION[0], consts.COMPUTER_STARTING_POSITION[1], is_human=False)
+        self.players = [simple_bot, human_player] #self.q_agent]
         self.ball = Ball()
         self.cursor = Cursor()
         self.block = Block()
 
         self.hand_detector = HandDetector(self.cursor.follow_finger)
-        self.drawables = [simple_bot, self.q_agent, self.ball, self.cursor, self.block]
+        self.drawables = [self.ball, self.cursor, self.block]
+        self.drawables.extend(self.players)
         self.running = True
         self.last_player_touched = None
 
